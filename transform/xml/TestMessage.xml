@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Messages>
+
+
+
+
+	<Message name="SubMessage" >
+	   <Attribute name="subBool" type="bool"/>
+	   <Attribute name="subString" type="str"/>
+	   <Attribute name="subLong" type="long"/>
+	</Message>
+
+	<Message name="TestMessage">
+		<Imports>
+			<Import path="msg.generated" msgClass="SubMessage"/>
+		</Imports>
+		<Attribute name="intValue" type="int"/>
+		<Attribute name="strValue" type="str"/>
+		<Attribute name="stringArray" type="str" list="[]"/>
+		<Attribute name="intArray" type="int" list="[]"/>
+		<Attribute name="subMsgs" type="SubMessage" list="[]"/>
+		<Attribute name="endValue" type="int"/>
+	</Message>
+
+
+
+
+
+</Messages>
