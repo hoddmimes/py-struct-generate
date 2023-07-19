@@ -41,8 +41,8 @@ java -jar ../libs/pymessage-1.0.jar -xml ./xml/TestMessagesFileSet.xml
 
 The generated is found in the directory ./pymessage/net/generated/
 
-[SubMessage.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/msg/generated/SubMessage.py)
-[TestMessage.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/msg/generated/TestMessage.py)
+- [SubMessage.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/msg/generated/SubMessage.py)
+- [TestMessage.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/msg/generated/TestMessage.py)
 
 There is also trivial test program that illustrates how to use the message classes
 [./pymessage/test.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/test.py)
