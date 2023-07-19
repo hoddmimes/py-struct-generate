@@ -1,8 +1,6 @@
 from msg.generated.SubMessage import SubMessage as SubMessage
 from msg.generated.TestMessage import TestMessage as TestMessage
-from msg.encoder import Encoder as Encoder
-from msg.decoder import Decoder as Decoder
-import importlib
+
 
 
 
@@ -13,18 +11,9 @@ def createSubMessage( boolValue: bool, longValue:int, strValue: str ) -> SubMess
     m.setSubBool( boolValue )
     return m
 
-def test():
-    buffer = bytearray(300)
-    ba1 = "abcdefghij".encode("utf-8")
-    ba2 = "123456789".encode('utf-8')
-    buffer[0:len(ba1)] = ba1
-    buffer[len(ba1):len(ba1)+len(ba2)] = ba2
-
-    print( str( buffer ))
-
 
 def main():
-    test()
+
     submsgs = []
     for i in range(3):
         submsgs.append( createSubMessage(True, (12345678900 + i), "sub message " + str(i)))
