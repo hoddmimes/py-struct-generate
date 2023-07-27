@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MessageFiles>
-	<MessageFile  file="./xml/TestMessage.xml" outPath="../pymessage/msg/generated/" package="msg.generated"/>
+	<MessageFile  file="./xml/TestMessage.xml" outPath="../pymessage/msg/generated/" package="msg.generated" allInOneFile="True"/>
 </MessageFiles>
 
 
+allInOneFile

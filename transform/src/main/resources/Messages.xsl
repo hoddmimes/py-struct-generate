@@ -12,8 +12,17 @@
     <xsl:param name="inputXml"/>
     <xsl:param name="inputXsl"/>
     <xsl:param name="comments"/>
+    <xsl:param name="allInOneFile"/>
 
     <xsl:include href="functx-1.0.1.xsl"/>
+
+    <xsl:variable name="singleFile">
+        <xsl:call-template name="isSingleFile"/>
+    </xsl:variable>
+
+    <xsl:variable name="singleFileName">
+        <xsl:call-template name="getXmlFileName"/>
+    </xsl:variable>
 
     <!--  ============================================== -->
     <!--  				Define JAVA data types 			 -->
@@ -44,14 +53,51 @@
     <!--    Generate Java message objects for all messages defined -->
     <!--     ===================================================== -->
 
-    <xsl:template match="/Messages">  <!-- <xsl:message>outpath: <xsl:value-of select="$outPath"/> xsl: <xsl:value-of select="$inputXsl"/> package: <xsl:value-of select="$package"/> comment: <xsl:value-of select="$comments"/> xml: <xsl:value-of select="$inputXml"/> </xsl:message> -->
+    <xsl:template match="/Messages">   <!-- <xsl:message>all-in-one-file: <xsl:value-of select="$allInOneFile"/> outpath: <xsl:value-of select="$outPath"/> xsl: <xsl:value-of select="$inputXsl"/> package: <xsl:value-of select="$package"/> comment: <xsl:value-of select="$comments"/> xml: <xsl:value-of select="$inputXml"/> </xsl:message> -->
 
-        <xsl:for-each select="Message">
-            <xsl:apply-templates mode="generateMessage" select="."/>
-        </xsl:for-each>
+        <xsl:if test="$singleFile = false()">
+            <xsl:for-each select="Message">
+                <xsl:variable name="file" select="concat('file://',$outPath,@name,'.py')"/>
+                <xsl:result-document href="{$file}" method="text" omit-xml-declaration="yes" encoding="utf-8">
+                    <xsl:apply-templates mode="generateMessage" select="."/>
+                    <xsl:message>Created file <xsl:value-of select="$file"/></xsl:message>
+                </xsl:result-document>
+            </xsl:for-each>
+        </xsl:if>
+
+        <xsl:if test="$singleFile = true()">
+            <xsl:variable name="file" select="concat('file://',$outPath,$singleFileName,'.py')"/>
+            <xsl:result-document href="{$file}" method="text" omit-xml-declaration="yes" encoding="utf-8">
+from msg.messageif import MessageBase
+from msg.messages import MessageAux
+from msg.decoder import Decoder
+from msg.encoder import Encoder
+            <xsl:for-each select="Message">
+                <xsl:apply-templates mode="generateMessage" select="."/>
+            </xsl:for-each>
+            <xsl:message>Created file <xsl:value-of select="$file"/></xsl:message>
+            </xsl:result-document>
+        </xsl:if>
     </xsl:template>
 
 
+    <xsl:template name="getXmlFileName">
+        <xsl:analyze-string select="$inputXml"
+                            regex="(.*/)?(\w+)\.xml$">
+            <xsl:matching-substring>
+                <xsl:value-of select="regex-group(2)"/>
+            </xsl:matching-substring>
+        </xsl:analyze-string>
+    </xsl:template>
+
+    <xsl:template name="isSingleFile">
+        <xsl:if test="lower-case($allInOneFile) eq 'true'">
+            <xsl:value-of select="true()"/>
+        </xsl:if>
+        <xsl:if test="lower-case($allInOneFile) eq 'false'">
+            <xsl:value-of select="false()"/>
+        </xsl:if>
+    </xsl:template>
 
 
     <!--     ============================================== -->
@@ -76,11 +122,9 @@ from <xsl:value-of select="@msgClass"/> import <xsl:value-of select="@msgClass"/
     <!--     			      Generate Message Class	    -->
     <!--     ============================================== -->
     <xsl:template mode="generateMessage" match="Message">
-        <xsl:param name="msgPos"/>
+        <xsl:param name="separateFile"/>
 
-        <xsl:variable name="file" select="concat('file://',$outPath,@name,'.py')"/>
-        <xsl:result-document href="{$file}" method="text" omit-xml-declaration="yes" encoding="utf-8">
-
+<xsl:if test="not($singleFile)">
 from msg.messageif import MessageBase
 from msg.messages import MessageAux
 from msg.decoder import Decoder
@@ -88,7 +132,7 @@ from msg.encoder import Encoder
 
             <xsl:apply-templates mode="addImports" select="../Imports"/>
             <xsl:apply-templates mode="addImports" select="./Imports"/>
-
+</xsl:if>
 class <xsl:value-of select="@name"/>( MessageBase ):
 
     def __init__(self):
@@ -97,9 +141,6 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         <xsl:apply-templates mode="declareGettersSetters" select="."/>
         <xsl:apply-templates mode="declareMessageIfMethods" select="."/>
         <xsl:apply-templates mode="applyCode" select="."/>
-
-            <xsl:message>Created file <xsl:value-of select="$file"/></xsl:message>
-        </xsl:result-document>
     </xsl:template>
 
 

@@ -40,6 +40,7 @@ public class Transform
     private String mSchemaDir = null;
     private String mSchemaOutputPath = ".";
     private String mWorkingDirectory;
+    private String mAllInOneFile = "";
 
     private String mXmlDefinitionSourceFile = null;
     private List<MessageSourceFile> mMessageFiles = new ArrayList<>();
@@ -102,6 +103,9 @@ public class Transform
         tParameters.put(new QName("inputXsl"),  XdmValue.makeValue(mXSLFile ));
         tParameters.put(new QName("inputXmlPath"), XdmValue.makeValue(tXmlSourcePath));
         tParameters.put(new QName("comments"), XdmValue.makeValue(mComments));
+        tParameters.put(new QName("allInOneFile"), XdmValue.makeValue(pSource.mAllInOneFile));
+
+
 
 
         transformer.setStylesheetParameters( tParameters );
@@ -204,12 +208,13 @@ public class Transform
                     String tXmlFile = tFileElement.getAttribute("file");
                     String tOutPath =  tFileElement.getAttribute("outPath");
                     String tPackage = tFileElement.getAttribute("package");
+                    String tAllInOneFile = tFileElement.getAttribute("allInOneFile");
 
                     boolean tDebugFlag = false;
                     if ((tFileElement.getAttribute("debug") != null) && (tFileElement.getAttribute("debug").length() > 0)) {
                         tDebugFlag = Boolean.parseBoolean(tFileElement.getAttribute("debug"));
                     }
-                    mMessageFiles.add( new MessageSourceFile( tXmlFile, tOutPath, tPackage, tDebugFlag ));
+                    mMessageFiles.add( new MessageSourceFile( tXmlFile, tOutPath, tPackage, tDebugFlag, tAllInOneFile ));
                 }
             }
         }
@@ -380,12 +385,15 @@ public class Transform
         String 			mPackage;
         boolean			mDebug;
 
-        MessageSourceFile( String pXmlSourceFile, String pOutPath,  String pPackage, boolean pDebug )
+        String          mAllInOneFile;
+
+        MessageSourceFile( String pXmlSourceFile, String pOutPath,  String pPackage, boolean pDebug, String pAllInOneFile )
         {
             mXmlSourceFile = pXmlSourceFile;
             mOutPath = pOutPath;
             mDebug = pDebug;
             mPackage = pPackage;
+            mAllInOneFile = pAllInOneFile;
         }
     }
 }
