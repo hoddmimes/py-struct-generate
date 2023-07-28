@@ -72,6 +72,7 @@ from msg.messageif import MessageBase
 from msg.messages import MessageAux
 from msg.decoder import Decoder
 from msg.encoder import Encoder
+from io import StringIO
             <xsl:for-each select="Message">
                 <xsl:apply-templates mode="generateMessage" select="."/>
             </xsl:for-each>
@@ -124,11 +125,12 @@ from <xsl:value-of select="@msgClass"/> import <xsl:value-of select="@msgClass"/
     <xsl:template mode="generateMessage" match="Message">
         <xsl:param name="separateFile"/>
 
-<xsl:if test="not($singleFile)">
+<xsl:if test="$singleFile = false()">
 from msg.messageif import MessageBase
 from msg.messages import MessageAux
 from msg.decoder import Decoder
 from msg.encoder import Encoder
+from io import StringIO
 
             <xsl:apply-templates mode="addImports" select="../Imports"/>
             <xsl:apply-templates mode="addImports" select="./Imports"/>
@@ -265,29 +267,29 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         if _indent == 0:
           return ""
         else:
-          return "                                 "[:_indent]
+          return "                                             "[:_indent]
 
     def toString(self, _indent: int = 0 ) -> str:
-        _buffer: str = ""
+        _buffer: StringIO = StringIO()
         <xsl:for-each select="Attribute">
             <xsl:variable name="dataType" select="@type"/>
             <xsl:if test="$typeTable/Type[@name=$dataType]">
-        _buffer += self._blanks( _indent ) + "<xsl:value-of select="@name"/> : " + str( self.<xsl:value-of select="@name"/>) + "\n"</xsl:if>
+        _buffer.write(self._blanks( _indent ) + "<xsl:value-of select="@name"/> : " + str( self.<xsl:value-of select="@name"/>) + "\n")</xsl:if>
             <xsl:if test="not($typeTable/Type[@name=$dataType])">
         if self.<xsl:value-of select="@name"/> is None:
-           _buffer += self._blanks( _indent ) + "<xsl:value-of select="@name"/> : None \n"
+           _buffer.write(self._blanks( _indent ) + "<xsl:value-of select="@name"/> : None \n")
         else:
                     <xsl:if test="not(@list)">
-           _buffer += self._blanks( _indent ) + "<xsl:value-of select="@name"/> : \n" + self.<xsl:value-of select="@name"/>.toString( _indent + 2) + "\n"</xsl:if>
+           _buffer.write(self._blanks( _indent ) + "<xsl:value-of select="@name"/> : \n" + self.<xsl:value-of select="@name"/>.toString( _indent + 2) + "\n")</xsl:if>
                     <xsl:if test="@list">
-           _buffer += self._blanks( _indent ) + "<xsl:value-of select="@name"/> : \n"
+           _buffer.write(self._blanks( _indent ) + "<xsl:value-of select="@name"/> : \n")
            _idx = 0
            for _m in self.<xsl:value-of select="@name"/>:
                 _idx += 1;
-                _buffer += self._blanks( _indent + 2 ) + "[" + str(_idx) +"] \n"
-                _buffer += _m.toString( _indent + 4) + "\n"</xsl:if></xsl:if>
+                _buffer.write( self._blanks( _indent + 2 ) + "[" + str(_idx) +"] \n" )
+                _buffer.write( _m.toString( _indent + 4) + "\n") </xsl:if></xsl:if>
         </xsl:for-each>
-        return _buffer
+        return _buffer.getvalue()
     </xsl:template>
 
 

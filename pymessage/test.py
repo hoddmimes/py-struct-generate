@@ -28,13 +28,17 @@ def main():
     tstmsg.setStringArray(str_lst)
     tstmsg.setEndValue(999)
 
+    print('########## Print instansiated TestMessage ###########')
     print( tstmsg.toString())
 
     data = tstmsg.encode()
+    print('\n\n########## Print encoded bytearray of the TestMessage ###########')
     print( str(data))
+    print('decoded message length: ' + str(len(data)) + 'bytes')
 
     xmsg = TestMessage()
     xmsg.decode( data )
+    print('\n\n########## Print decoded bytearray of the TestMessage ###########')
     print( xmsg.toString())
 
 if __name__ == '__main__':
