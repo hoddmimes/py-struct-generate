@@ -44,7 +44,20 @@ The generated is found in the directory ./pymessage/net/generated/
 - [SubMessage.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/msg/generated/SubMessage.py)
 - [TestMessage.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/msg/generated/TestMessage.py)
 
-There is also trivial test program that illustrates how to use the message classes
+Generated message classes can be generated in a single module file or one file per message class. The behaviour is 
+controlled be the definitions in the program XML definition file. E.g.
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<MessageFiles>
+	<MessageFile  file="./xml/TestMessage.xml" outPath="../pymessage/msg/generated/" package="msg.generated" allInOneFile="True"/>
+</MessageFiles>
+```
+
+The parameter *__allInOneFile__* defines if generated message classes should be placed in separated modules files or 
+a single file. In case all generated message classes are placed in one file, the name of the file will be equal to the
+XML filename defining the message classes.
+
+There is also trivial test program that illustrates how to use generated message classes
 [./pymessage/test.py](https://github.com/hoddmimes/py-struct-generate/blob/main/pymessage/test.py)
 
 
