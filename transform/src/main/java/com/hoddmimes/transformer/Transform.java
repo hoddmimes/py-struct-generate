@@ -99,6 +99,7 @@ public class Transform
         Map<QName, XdmValue> tParameters = new HashMap<>();
         tParameters.put(new QName("outPath"), XdmValue.makeValue(getOutPath( pSource.mOutPath )));
         tParameters.put(new QName("package"), XdmValue.makeValue(pSource.mPackage ));
+        tParameters.put(new QName("corePackage"), XdmValue.makeValue(pSource.mCorePackage ));
         tParameters.put(new QName("inputXml"), XdmValue.makeValue(pSource.mXmlSourceFile ));
         tParameters.put(new QName("inputXsl"),  XdmValue.makeValue(mXSLFile ));
         tParameters.put(new QName("inputXmlPath"), XdmValue.makeValue(tXmlSourcePath));
@@ -208,13 +209,14 @@ public class Transform
                     String tXmlFile = tFileElement.getAttribute("file");
                     String tOutPath =  tFileElement.getAttribute("outPath");
                     String tPackage = tFileElement.getAttribute("package");
+                    String tCorePackage = tFileElement.getAttribute("corePackage");
                     String tAllInOneFile = tFileElement.getAttribute("allInOneFile");
 
                     boolean tDebugFlag = false;
                     if ((tFileElement.getAttribute("debug") != null) && (tFileElement.getAttribute("debug").length() > 0)) {
                         tDebugFlag = Boolean.parseBoolean(tFileElement.getAttribute("debug"));
                     }
-                    mMessageFiles.add( new MessageSourceFile( tXmlFile, tOutPath, tPackage, tDebugFlag, tAllInOneFile ));
+                    mMessageFiles.add( new MessageSourceFile( tXmlFile, tOutPath, tPackage, tCorePackage, tDebugFlag, tAllInOneFile ));
                 }
             }
         }
@@ -383,16 +385,18 @@ public class Transform
         String 			mXmlSourceFile;
         String 			mOutPath;
         String 			mPackage;
+        String          mCorePackage;
         boolean			mDebug;
 
         String          mAllInOneFile;
 
-        MessageSourceFile( String pXmlSourceFile, String pOutPath,  String pPackage, boolean pDebug, String pAllInOneFile )
+        MessageSourceFile( String pXmlSourceFile, String pOutPath,  String pPackage, String pCorePackage,  boolean pDebug, String pAllInOneFile )
         {
             mXmlSourceFile = pXmlSourceFile;
             mOutPath = pOutPath;
             mDebug = pDebug;
             mPackage = pPackage;
+            mCorePackage = pCorePackage;
             mAllInOneFile = pAllInOneFile;
         }
     }

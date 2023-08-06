@@ -8,6 +8,7 @@
 
     <xsl:output method="text"/>
     <xsl:param name="outPath"/>
+    <xsl:param name="corePackage"/>
     <xsl:param name="package"/>
     <xsl:param name="inputXml"/>
     <xsl:param name="inputXsl"/>
@@ -68,9 +69,9 @@
         <xsl:if test="$singleFile = true()">
             <xsl:variable name="file" select="concat('file://',$outPath,$singleFileName,'.py')"/>
             <xsl:result-document href="{$file}" method="text" omit-xml-declaration="yes" encoding="utf-8">
-from msg.messageif import MessageBase
-from msg.messages import MessageAux
-from msg.decoder import Decoder
+from <xsl:value-of select="$corePackage"/>.messageif import MessageBase
+from <xsl:value-of select="$corePackage"/>.messages import MessageAux
+from <xsl:value-of select="$corePackage"/>.decoder import Decoder
 from msg.encoder import Encoder
 from io import StringIO
             <xsl:for-each select="Message">
@@ -126,10 +127,10 @@ from <xsl:value-of select="@msgClass"/> import <xsl:value-of select="@msgClass"/
         <xsl:param name="separateFile"/>
 
 <xsl:if test="$singleFile = false()">
-from msg.messageif import MessageBase
-from msg.messages import MessageAux
-from msg.decoder import Decoder
-from msg.encoder import Encoder
+from <xsl:value-of select="$corePackage"/>.messageif import MessageBase
+from <xsl:value-of select="$corePackage"/>.messages import MessageAux
+from <xsl:value-of select="$corePackage"/>.decoder import Decoder
+from <xsl:value-of select="$corePackage"/>.encoder import Encoder
 from io import StringIO
 
             <xsl:apply-templates mode="addImports" select="../Imports"/>
