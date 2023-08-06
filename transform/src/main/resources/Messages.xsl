@@ -72,7 +72,7 @@
 from <xsl:value-of select="$corePackage"/>.messageif import MessageBase
 from <xsl:value-of select="$corePackage"/>.messages import MessageAux
 from <xsl:value-of select="$corePackage"/>.decoder import Decoder
-from msg.encoder import Encoder
+from <xsl:value-of select="$corePackage"/>.encoder import Encoder
 from io import StringIO
             <xsl:for-each select="Message">
                 <xsl:apply-templates mode="generateMessage" select="."/>
