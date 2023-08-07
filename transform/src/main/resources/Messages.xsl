@@ -291,6 +291,9 @@ class <xsl:value-of select="@name"/>( MessageBase ):
                 _buffer.write( _m.toString( _indent + 4) + "\n") </xsl:if></xsl:if>
         </xsl:for-each>
         return _buffer.getvalue()
+
+    def __str__(self) ->str:
+        return self.toString()
     </xsl:template>
 
 

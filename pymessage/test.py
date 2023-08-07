@@ -29,7 +29,7 @@ def main():
     tstmsg.setEndValue(999)
 
     print('########## Print instansiated TestMessage ###########')
-    print( tstmsg.toString())
+    print( tstmsg )
 
     data = tstmsg.encode()
     print('\n\n########## Print encoded bytearray of the TestMessage ###########')
@@ -39,7 +39,7 @@ def main():
     xmsg = TestMessage()
     xmsg.decode( data )
     print('\n\n########## Print decoded bytearray of the TestMessage ###########')
-    print( xmsg.toString())
+    print( xmsg )
 
 if __name__ == '__main__':
     main()

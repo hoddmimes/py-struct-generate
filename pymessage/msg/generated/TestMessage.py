@@ -123,4 +123,7 @@ class TestMessage( MessageBase ):
                 _buffer.write( _m.toString( _indent + 4) + "\n") 
         _buffer.write(self._blanks( _indent ) + "endValue : " + str( self.endValue) + "\n")
         return _buffer.getvalue()
+
+    def __str__(self) ->str:
+        return self.toString()
     

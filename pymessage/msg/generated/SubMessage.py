@@ -76,4 +76,7 @@ class SubMessage( MessageBase ):
         _buffer.write(self._blanks( _indent ) + "subString : " + str( self.subString) + "\n")
         _buffer.write(self._blanks( _indent ) + "subLong : " + str( self.subLong) + "\n")
         return _buffer.getvalue()
+
+    def __str__(self) ->str:
+        return self.toString()
     
