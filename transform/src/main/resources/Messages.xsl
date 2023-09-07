@@ -71,8 +71,8 @@
             <xsl:result-document href="{$file}" method="text" omit-xml-declaration="yes" encoding="utf-8">
 from <xsl:value-of select="$corePackage"/>.messageif import MessageBase
 from <xsl:value-of select="$corePackage"/>.messages import MessageAux
-from <xsl:value-of select="$corePackage"/>.decoder import Decoder
-from <xsl:value-of select="$corePackage"/>.encoder import Encoder
+from <xsl:value-of select="$corePackage"/>.codec import Decoder
+from <xsl:value-of select="$corePackage"/>.codec import Encoder
 from io import StringIO
             <xsl:for-each select="Message">
                 <xsl:apply-templates mode="generateMessage" select="."/>
@@ -85,7 +85,7 @@ from io import StringIO
 
     <xsl:template name="getXmlFileName">
         <xsl:analyze-string select="$inputXml"
-                            regex="(.*/)?(\w+)\.xml$">
+                            regex="(.*/)?([a-zA-Z0-9_]+)\.xml$">
             <xsl:matching-substring>
                 <xsl:value-of select="regex-group(2)"/>
             </xsl:matching-substring>
@@ -110,9 +110,9 @@ from io import StringIO
         # Add XML defined imports
         <xsl:for-each select="Import">
             <xsl:if test="string-length(@path) &gt; 0">
-from <xsl:value-of select="@path"/>.<xsl:value-of select="@msgClass"/> import <xsl:value-of select="@msgClass"/> as <xsl:value-of select="@msgClass"/></xsl:if>
+from <xsl:value-of select="@path"/>.<xsl:value-of select="@msgClass"/> import *</xsl:if>
             <xsl:if test="not(string-length(@path) &gt; 0)">
-from <xsl:value-of select="@msgClass"/> import <xsl:value-of select="@msgClass"/> as <xsl:value-of select="@msgClass"/></xsl:if>
+from <xsl:value-of select="@msgClass"/> import *</xsl:if>
         </xsl:for-each>
     </xsl:template>
 
@@ -129,8 +129,8 @@ from <xsl:value-of select="@msgClass"/> import <xsl:value-of select="@msgClass"/
 <xsl:if test="$singleFile = false()">
 from <xsl:value-of select="$corePackage"/>.messageif import MessageBase
 from <xsl:value-of select="$corePackage"/>.messages import MessageAux
-from <xsl:value-of select="$corePackage"/>.decoder import Decoder
-from <xsl:value-of select="$corePackage"/>.encoder import Encoder
+from <xsl:value-of select="$corePackage"/>.codec import Decoder
+from <xsl:value-of select="$corePackage"/>.codec import Encoder
 from io import StringIO
 
             <xsl:apply-templates mode="addImports" select="../Imports"/>
@@ -139,7 +139,11 @@ from io import StringIO
 class <xsl:value-of select="@name"/>( MessageBase ):
 
     def __init__(self):
-        self.className = "<xsl:value-of select="$package"/>.<xsl:value-of select="@name"/>"
+        <xsl:if test="$singleFile = false()">
+        self.classModule = "<xsl:value-of select="$package"/>.<xsl:value-of select="@name"/>"</xsl:if>
+        <xsl:if test="$singleFile = true()">
+        self.classModule = "<xsl:value-of select="$package"/>.<xsl:value-of select="$singleFileName"/>"</xsl:if>
+        self.className = "<xsl:value-of select="@name"/>"
         <xsl:apply-templates mode="declareAttributes" select="."/>
         <xsl:apply-templates mode="declareGettersSetters" select="."/>
         <xsl:apply-templates mode="declareMessageIfMethods" select="."/>
@@ -187,19 +191,23 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         <xsl:variable name="type" select="$typeTable/Type[@name=$dataType]/@type"/>
 
         <xsl:if test="@list">
-    def set<xsl:value-of select="functx:capitalize-first (@name)"/>( self, value: list ):
-        self.<xsl:value-of select="@name"/> = value
+    @property
+    def <xsl:value-of select="@name"/>(self) -&gt; list:
+        return self._<xsl:value-of select="@name"/>
 
-    def get<xsl:value-of select="functx:capitalize-first (@name)"/>( self ) -&gt; list:
-        return self.<xsl:value-of select="@name"/>
+    @<xsl:value-of select="@name"/>.setter
+    def <xsl:value-of select="@name"/>(self, value: list):
+        self._<xsl:value-of select="@name"/> = value
         </xsl:if>
 
         <xsl:if test="not(@list)">
-    def set<xsl:value-of select="functx:capitalize-first (@name)"/>( self, value: <xsl:value-of select="$type"/> ):
-        self.<xsl:value-of select="@name"/> = value
+    @property
+    def <xsl:value-of select="@name"/>(self) -&gt; <xsl:value-of select="$type"/>:
+        return self._<xsl:value-of select="@name"/>
 
-    def get<xsl:value-of select="functx:capitalize-first (@name)"/>( self ) -&gt; <xsl:value-of select="$type"/>:
-        return self.<xsl:value-of select="@name"/>
+    @<xsl:value-of select="@name"/>.setter
+    def <xsl:value-of select="@name"/>(self, value: <xsl:value-of select="$type"/>):
+            self._<xsl:value-of select="@name"/> = value
         </xsl:if>
 
     </xsl:template>
@@ -209,18 +217,25 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         <xsl:variable name="dataType" select="@type"/>
 
         <xsl:if test="@list">
-    def set<xsl:value-of select="functx:capitalize-first (@name)"/>( self, value: list ):
-        self.<xsl:value-of select="@name"/> = value
 
-    def get<xsl:value-of select="functx:capitalize-first (@name)"/>( self ) -&gt; list:
-        return self.<xsl:value-of select="@name"/>
+    @property
+    def <xsl:value-of select="@name"/>(self) -&gt; list:
+        return self._<xsl:value-of select="@name"/>
+
+    @<xsl:value-of select="@name"/>.setter
+    def <xsl:value-of select="@name"/>(self, value: list):
+        self._<xsl:value-of select="@name"/> = value
+
+
         </xsl:if>
 
         <xsl:if test="not(@list)">
-    def set<xsl:value-of select="functx:capitalize-first (@name)"/>( self, value: <xsl:value-of select="$dataType"/> ):
-        self.<xsl:value-of select="@name"/> = value
+    @<xsl:value-of select="@name"/>.setter
+    def <xsl:value-of select="@name"/>(self, value: <xsl:value-of select="$dataType"/>):
+        self._<xsl:value-of select="@name"/> = value
 
-    def get<xsl:value-of select="functx:capitalize-first (@name)"/>( self ) -&gt; <xsl:value-of select="$dataType"/>:
+    @property
+    def get<xsl:value-of select="@name"/>(self) -&gt; <xsl:value-of select="$dataType"/>:
         return self.<xsl:value-of select="@name"/>
         </xsl:if>
 
@@ -236,9 +251,9 @@ class <xsl:value-of select="@name"/>( MessageBase ):
                 <xsl:variable name="dataType" select="@type"/>
                 <xsl:if test="$typeTable/Type[@name=$dataType]">
                     <xsl:variable name="dType" select="$typeTable/Type[@name=$dataType]/@type"/>
-        self.<xsl:value-of select="@name"/>: <xsl:if test="@list">list</xsl:if><xsl:if test="not(@list)"><xsl:value-of select="$dType"/></xsl:if></xsl:if>
+        self._<xsl:value-of select="@name"/>: <xsl:if test="@list">list</xsl:if><xsl:if test="not(@list)"><xsl:value-of select="$dType"/></xsl:if></xsl:if>
                 <xsl:if test="not($typeTable/Type[@name=$dataType])">
-        self.<xsl:value-of select="@name"/>: <xsl:if test="@list">list</xsl:if><xsl:if test="not(@list)"><xsl:value-of select="@type"/></xsl:if></xsl:if>
+        self._<xsl:value-of select="@name"/>: <xsl:if test="@list">list</xsl:if><xsl:if test="not(@list)"><xsl:value-of select="@type"/></xsl:if></xsl:if>
         </xsl:for-each>
 
     </xsl:template>
@@ -314,7 +329,8 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         <!-- ================= ENCODER ======================== -->
     def encode(self) -> bytearray:
         _encoder = Encoder()
-        _encoder.addString( self.className )
+        _encoder.addString(self.classModule)
+        _encoder.addString(self.className)
 
         <xsl:for-each select="Attribute">
         # Encode Attribute: <xsl:value-of select="@name"/> Type: <xsl:value-of select="@type"/> List: <xsl:if test="@list">true</xsl:if><xsl:if test="not(@list)">false</xsl:if>
@@ -326,12 +342,13 @@ class <xsl:value-of select="@name"/>( MessageBase ):
                 <xsl:apply-templates mode="encoderSingle" select="."/>
             </xsl:if>
         </xsl:for-each>
-        return _encoder.get_bytes()
+        return _encoder.buffer
 
 
         <!-- ================= DECODER ======================== -->
     def decode( self, buffer: bytearray):
         _decoder = Decoder( buffer )
+        self.classModule = _decoder.getString()
         self.className = _decoder.getString()
         <xsl:for-each select="Attribute">
         #Decode Attribute: <xsl:value-of select="@name"/> Type:<xsl:value-of select="@type"/> List: <xsl:if test="@list">true</xsl:if><xsl:if test="not(@list)">false</xsl:if>
@@ -352,10 +369,10 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         <xsl:variable name="dataType" select="@type"/>
 
         <xsl:if test="$typeTable/Type[@name=$dataType]">
-        self.<xsl:value-of select="@name"/> = _decoder.<xsl:value-of select="$typeTable/Type[@name=$dataType]/@decoder"/>()
+        self._<xsl:value-of select="@name"/> = _decoder.<xsl:value-of select="$typeTable/Type[@name=$dataType]/@decoder"/>()
         </xsl:if>
         <xsl:if test="not($typeTable/Type[@name=$dataType])">
-        self.<xsl:value-of select="@name"/> = _decoder.getMessage()
+        self._<xsl:value-of select="@name"/> = _decoder.getMessage()
         </xsl:if>
     </xsl:template>
 
@@ -364,9 +381,9 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         <xsl:variable name="dataType" select="@type"/>
 
         <xsl:if test="$typeTable/Type[@name=$dataType]">
-        self.<xsl:value-of select="@name"/> = <xsl:value-of select="$typeTable/Type[@name=$dataType]/@arrayDecoder"/>( _decoder )</xsl:if>
+        self._<xsl:value-of select="@name"/> = <xsl:value-of select="$typeTable/Type[@name=$dataType]/@arrayDecoder"/>( _decoder )</xsl:if>
         <xsl:if test="not($typeTable/Type[@name=$dataType])">
-        self.<xsl:value-of select="@name"/> = MessageAux.getMessageList( _decoder )</xsl:if>
+        self._<xsl:value-of select="@name"/> = MessageAux.getMessageList( _decoder )</xsl:if>
     </xsl:template>
 
 
@@ -380,9 +397,9 @@ class <xsl:value-of select="@name"/>( MessageBase ):
 
         <xsl:if test="$typeTable/Type[@name=$dataType]">
             # Encode <xsl:value-of select="$dataType"/> list
-        <xsl:value-of select="$typeTable/Type[@name=$dataType]/@arrayEncoder"/>( _encoder, self.<xsl:value-of select="@name"/>  )</xsl:if>
+        <xsl:value-of select="$typeTable/Type[@name=$dataType]/@arrayEncoder"/>( _encoder, self._<xsl:value-of select="@name"/>  )</xsl:if>
         <xsl:if test="not($typeTable/Type[@name=$dataType])">
-        MessageAux.addMessageList( _encoder, self.<xsl:value-of select="@name"/>)</xsl:if>
+        MessageAux.addMessageList( _encoder, self._<xsl:value-of select="@name"/>)</xsl:if>
     </xsl:template>
 
 
@@ -390,9 +407,9 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         <xsl:variable name="dataType" select="@type"/>
 
         <xsl:if test="$typeTable/Type[@name=$dataType]">
-        _encoder.<xsl:value-of select="$typeTable/Type[@name=$dataType]/@encoder"/>( self.<xsl:value-of select="@name"/> )</xsl:if>
+        _encoder.<xsl:value-of select="$typeTable/Type[@name=$dataType]/@encoder"/>( self._<xsl:value-of select="@name"/> )</xsl:if>
         <xsl:if test="not($typeTable/Type[@name=$dataType]) and not(@constantGroup)">
-        _encoder.addMessage( self.<xsl:value-of select="@name"/> )</xsl:if>
+        _encoder.addMessage( self._<xsl:value-of select="@name"/> )</xsl:if>
     </xsl:template>
 
 
