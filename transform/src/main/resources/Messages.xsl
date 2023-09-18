@@ -230,13 +230,15 @@ class <xsl:value-of select="@name"/>( MessageBase ):
         </xsl:if>
 
         <xsl:if test="not(@list)">
+    @property
+    def <xsl:value-of select="@name"/>(self) -&gt; <xsl:value-of select="$dataType"/>:
+       return self.<xsl:value-of select="@name"/>
+
     @<xsl:value-of select="@name"/>.setter
     def <xsl:value-of select="@name"/>(self, value: <xsl:value-of select="$dataType"/>):
         self._<xsl:value-of select="@name"/> = value
 
-    @property
-    def get<xsl:value-of select="@name"/>(self) -&gt; <xsl:value-of select="$dataType"/>:
-        return self.<xsl:value-of select="@name"/>
+
         </xsl:if>
 
 

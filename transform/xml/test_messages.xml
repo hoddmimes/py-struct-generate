@@ -9,7 +9,7 @@
 
 	<Message name="TestMessage">
 		<Imports>
-			<Import path="msg.generated" msgClass="SubMessage"/>
+			<Import path="pymessage.msg.generated" msgClass="SubMessage"/>
 		</Imports>
 		<Attribute name="int_value" type="int"/>
 		<Attribute name="str_value" type="str"/>

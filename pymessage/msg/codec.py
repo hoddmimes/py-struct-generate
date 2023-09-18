@@ -230,13 +230,13 @@ class Encoder(Codec):
     def addMessage(self, msg: MessageBase):
         if msg is None:
             self._capacity_(1)
-            self.addBool(0)
+            self.addBool(False)
             return
 
         _bytarr = msg.encode()
         _size = (5 + len(_bytarr))
         self._capacity_(_size)
-        self.addBool(1)
+        self.addBool(True)
         self.addInt(len(_bytarr))
         self._buffer[self._pos:self._pos + len(_bytarr)] = _bytarr
         self._pos += len(_bytarr)
